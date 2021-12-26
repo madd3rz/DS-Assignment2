@@ -46,7 +46,7 @@ public class MD5Client {
         numOfServers = userInput.nextInt();
 
         try {
-            if (numOfServers < 1 && numOfServers > 2) {
+            if (numOfServers < 1 || numOfServers > 2) {
                 System.out.println("Max 2 servers only!");
                 System.exit(0);
             }
@@ -55,12 +55,11 @@ public class MD5Client {
             System.exit(0);
         }
         // change to your server's ip address
-        MD5Crack_Interface stub = (MD5Crack_Interface) Naming.lookup("rmi://192.168.1.108:5000/MD5Crack_Interface"); 
+        MD5Crack_Interface stub = (MD5Crack_Interface) Naming.lookup("rmi://192.168.0.161:5000/MD5Crack_Interface");
         cores = stub.getTotalThreads();
 
-        
         // change to your Server's ip address
-        MD5Crack_Interface stub2 = (MD5Crack_Interface) Naming.lookup("rmi://192.168.1.106:5000/MD5Crack_Interface"); 
+        MD5Crack_Interface stub2 = (MD5Crack_Interface) Naming.lookup("rmi://192.168.0.153:5000/MD5Crack_Interface");
         cores += stub2.getTotalThreads();
 
         System.out.print("The total number of thread do you want use : ");
@@ -95,8 +94,10 @@ public class MD5Client {
         }
 
         try {
-            stub.crackPassword(hashedMD5, numOfThread, passwordLength, 1);
-            if (numOfServers == 2) {
+            if (numOfServers == 1) {
+                stub.crackPassword(hashedMD5, numOfThread, passwordLength, 3);
+            } else if (numOfServers == 2) {
+                stub.crackPassword(hashedMD5, numOfThread, passwordLength, 1);
                 stub2.crackPassword(hashedMD5, numOfThread, passwordLength, 2);
             }
 
@@ -112,9 +113,6 @@ public class MD5Client {
 
             List<String> values = stub.getPassword();
             List<String> values2 = stub2.getPassword();
-
-            System.out.println(values);
-            System.out.println(values2);
 
             if (!values.isEmpty()) {
                 System.out.print("Found password is " + values.get(0) + "\n");
