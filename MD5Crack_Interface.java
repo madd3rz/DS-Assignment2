@@ -10,4 +10,8 @@ public interface MD5Crack_Interface extends Remote{
     public List<String> getPassword() throws RemoteException;
 
     public int getTotalThreads() throws RemoteException;
+
+    public void stopAllThreads() throws RemoteException;
+
+    public boolean isFound() throws RemoteException;
 }

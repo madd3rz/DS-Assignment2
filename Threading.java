@@ -7,7 +7,6 @@ public class Threading {
 	static String foundPassword;
 	static boolean isFound;
 	static ArrayList<String> values = new ArrayList<>();
-    int cores = Runtime.getRuntime().availableProcessors();
 	static int serverNo;
 
 	static List<MD5Thread> listOfThreads = new ArrayList<MD5Thread>();
@@ -88,8 +87,7 @@ public class Threading {
 		values.add(thread);
 		values.add(time);
 		System.out.println("AL: " + values);
-		//foundPassword = password;
-		
+		isFound = true;
 	}
 
 	public static ArrayList<String> getPass(){

@@ -5,8 +5,8 @@ import java.util.List;
 public class MD5Imple extends UnicastRemoteObject implements MD5Crack_Interface {
 
     int numOfThreads = Runtime.getRuntime().availableProcessors();
+    boolean found = false;
 
-    // ArrayList<String> values = new ArrayList<>();
     List<String> values;
     protected MD5Imple() throws RemoteException {
         super();
@@ -17,16 +17,26 @@ public class MD5Imple extends UnicastRemoteObject implements MD5Crack_Interface 
             Threading.startServer(hashedMD5, numberOfThreads, passwordLength, server);
     }
 
-    public List<String> getPassword(){
-        while (Threading.isFound != true){
-            values = Threading.getPass();
-        }
-
+    public List<String> getPassword() throws RemoteException{
+        values = Threading.getPass();
         return (values);
     }
 
     public int getTotalThreads(){
         return numOfThreads;
+    }
+
+    @Override
+    public void stopAllThreads() throws RemoteException {
+        Threading.stop_threads();
+    }
+
+    @Override
+    public boolean isFound() throws RemoteException {
+        while (Threading.isFound != true) { 
+            return false;
+        }
+        return true;
     }
     
 }
