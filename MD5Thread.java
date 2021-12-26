@@ -35,32 +35,31 @@ public class MD5Thread extends Thread {
             // take the interval number. for ex: 33-43
             a = Integer.parseInt(A[0]); // ex : 33
             b = Integer.parseInt(A[1]); // ex : 43
-            System.out.println(a);
-            System.out.println(b);
         } catch (ArrayIndexOutOfBoundsException e) {
             // for numOfThread == 1 only
             a = 33;
             b = 126;
         }
 
-        //check if the length of password is correct within the range from 2 to 5 character password
+        // check if the length of password is correct within the range from 2 to 5
+        // character password
         double timesStart = System.currentTimeMillis();
         switch (passwordLength) {
-        case 2:
-            TwoCharPassword(a, b, timesStart);
-            break;
-        case 3:
-            ThreeCharPassword(a, b, timesStart);
-            break;
-        case 4:
-            FourCharPassword(a, b, timesStart);
-            break;
-        case 5:
-            FiveCharPassword(a, b, timesStart);
-            break;
-        default:
-            System.out.println("You entered invalid length of password.");
-            break;
+            case 2:
+                TwoCharPassword(a, b, timesStart);
+                break;
+            case 3:
+                ThreeCharPassword(a, b, timesStart);
+                break;
+            case 4:
+                FourCharPassword(a, b, timesStart);
+                break;
+            case 5:
+                FiveCharPassword(a, b, timesStart);
+                break;
+            default:
+                System.out.println("You entered invalid length of password.");
+                break;
         }
     }
 
@@ -94,7 +93,8 @@ public class MD5Thread extends Thread {
     private void passwordChecking(String password, double timesStart) {
         if (hashedMD5.equals(getMD5(password))) {
             foundPassword = password;
-            System.out.println("\n--> Result         : The password is " + password + " found at thread number " + threadId);
+            System.out.println(
+                    "\n--> Result         : The password is " + password + " found at thread number " + threadId);
             double timesEnd = System.currentTimeMillis();
             double totalTime = (timesEnd - timesStart) / 1000 / 60;
             System.out.printf("--> Time elapsed   : %.5f minutes \n\n", totalTime);
@@ -107,7 +107,8 @@ public class MD5Thread extends Thread {
     private void TwoCharPassword(int a, int b, double timesStart) {
         // making search on the first character from a to b
         for (int i = a; i < b; i++) {
-            if(isFound) break;
+            if (isFound)
+                break;
             char c = (char) i;
             for (int n = 33; n < 127; n++) {
                 char v = (char) n;
@@ -115,7 +116,7 @@ public class MD5Thread extends Thread {
                 passwordChecking(word, timesStart);
             }
         }
-        if(isFound == false){
+        if (isFound == false) {
             System.out.println("Thread " + threadId + " - Password is not found.");
         }
 
@@ -124,10 +125,12 @@ public class MD5Thread extends Thread {
     private void ThreeCharPassword(int a, int b, double timesStart) {
         // making search on the first character from a to b
         for (int i = a; i < b; i++) {
-            if(isFound) break;
+            if (isFound)
+                break;
             char c = (char) i;
             for (int m = 33; m < 127; m++) {
-                if(isFound) break;
+                if (isFound)
+                    break;
                 char x = (char) m;
                 for (int n = 33; n < 127; n++) {
                     char v = (char) n;
@@ -137,7 +140,7 @@ public class MD5Thread extends Thread {
             }
         }
 
-        if(isFound == false){
+        if (isFound == false) {
             System.out.println("Thread " + threadId + " - Password is not found.");
         }
 
@@ -146,13 +149,16 @@ public class MD5Thread extends Thread {
     private void FourCharPassword(int a, int b, double timesStart) {
         // making search on the first character from a to b
         for (int i = a; i < b; i++) {
-            if(isFound) break;
+            if (isFound)
+                break;
             char c = (char) i;
             for (int l = 33; l < 127; l++) {
-                if(isFound) break;
+                if (isFound)
+                    break;
                 char r = (char) l;
                 for (int m = 33; m < 127; m++) {
-                    if(isFound) break;
+                    if (isFound)
+                        break;
                     char x = (char) m;
                     for (int n = 33; n < 127; n++) {
                         char v = (char) n;
@@ -163,7 +169,7 @@ public class MD5Thread extends Thread {
             }
         }
 
-        if(isFound == false){
+        if (isFound == false) {
             System.out.println("Thread " + threadId + " - Password is not found.");
         }
 
@@ -172,16 +178,20 @@ public class MD5Thread extends Thread {
     private void FiveCharPassword(int a, int b, double timesStart) {
         // making search on the first character from a to b
         for (int i = a; i < b; i++) {
-            if(isFound) break;
+            if (isFound)
+                break;
             char c = (char) i;
             for (int k = 33; k < 127; k++) {
-                if(isFound) break;
+                if (isFound)
+                    break;
                 char e = (char) k;
                 for (int l = 33; l < 127; l++) {
-                    if(isFound) break;
+                    if (isFound)
+                        break;
                     char r = (char) l;
                     for (int m = 33; m < 127; m++) {
-                        if(isFound) break;
+                        if (isFound)
+                            break;
                         char x = (char) m;
                         for (int n = 33; n < 127; n++) {
                             char v = (char) n;
@@ -193,7 +203,7 @@ public class MD5Thread extends Thread {
             }
         }
 
-        if(isFound == false){
+        if (isFound == false) {
             System.out.println("Thread " + threadId + " - Password is not found.");
         }
 
