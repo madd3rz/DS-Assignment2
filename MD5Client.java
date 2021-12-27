@@ -55,7 +55,7 @@ public class MD5Client {
             System.exit(0);
         }
         // change to your server's ip address
-        MD5Crack_Interface stub = (MD5Crack_Interface) Naming.lookup("rmi://192.168.1.108:5000/MD5Crack_Interface"); 
+        MD5Crack_Interface stub = (MD5Crack_Interface) Naming.lookup("rmi://192.168.1.100:5000/MD5Crack_Interface");
         cores = stub.getTotalThreads();
 
         
