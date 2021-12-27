@@ -7,14 +7,16 @@ public class MD5Client {
     private MD5Client() {
     }
 
+    // Variable declaration
+    static int numOfThread = 0;
+    static int numOfServers = 0;
+    static String hashedMD5;
+    static int passwordLength = 0;
+    static int cores = 0;
+
     public static void main(String[] args) throws MalformedURLException, RemoteException, NotBoundException {
 
-        // Variable declaration
-        int numOfThread = 0;
-        int numOfServers = 0;
-        String hashedMD5;
-        int passwordLength = 0;
-        int cores = 0;
+        
         Scanner userInput = new Scanner(System.in);
 
         // User Interface
@@ -31,97 +33,71 @@ public class MD5Client {
         System.out.print("\nYou are required to enter the number of machines/server either 1 or 2.\n");
         System.out.print("\nYou are also required to enter the number of threads only ranging from 1 to 10.\n");
         System.out.print("You are also required to enter the number of character ranging from 2 to 5.\n");
-        System.out.println("\nNOTE: The number of available threads on all machines is " + cores);
 
         System.out.print("\nHashed MD5 : ");
         hashedMD5 = userInput.nextLine();
 
-        // Check for valid hashed md5 value
-        if (hashedMD5.length() != 32) {
-            System.out.println("\nError! Please enter correct length of MD5 Hash value.");
-            System.exit(0);
-        }
-
         System.out.print("The number of machine/server do you want use : ");
         numOfServers = userInput.nextInt();
-
-        try {
-            if (numOfServers < 1 || numOfServers > 2) {
-                System.out.println("Max 2 servers only!");
-                System.exit(0);
-            }
-        } catch (Exception e) {
-            System.out.println("\nError! Please enter a valid number 1 or 2 only");
-            System.exit(0);
-        }
-        // change to your server's ip address
-        MD5Crack_Interface stub = (MD5Crack_Interface) Naming.lookup("rmi://192.168.0.161:5000/MD5Crack_Interface");
-        cores = stub.getTotalThreads();
-
-        // change to your Server's ip address
-        MD5Crack_Interface stub2 = (MD5Crack_Interface) Naming.lookup("rmi://192.168.0.153:5000/MD5Crack_Interface");
-        cores += stub2.getTotalThreads();
 
         System.out.print("The total number of thread do you want use : ");
         numOfThread = userInput.nextInt();
 
-        try {
-            if (numOfThread < 1 || numOfThread > 10 && cores < numOfThread) { // check number of thread entered
-                System.out.println("\nError! Please enter a valid number of threads (1-10).");
-                System.out.println("Number of available threads on your machine is : " + cores);
-                System.exit(0);
-            }
-            // to inform the users that their machine is not capable to execute
-            else if (cores < numOfThread) {
-                System.out.println("\nError, your machine could not excecute! Insufficient thread.");
-                System.exit(0);
-            }
-        } catch (Exception ex) { // if input is not a number
-            System.out.println("\nError! Please enter a valid number of threads (1-10)");
-            System.exit(0);
-        }
-
         System.out.print("The number of character of password that you want to crack : ");
-        try {
-            passwordLength = userInput.nextInt();
-            if (passwordLength < 2 || passwordLength > 5) { // check the password length entered
-                System.out.println("\nError! Please enter a character number from 2 to 5 only.");
-                System.exit(0);
-            }
-        } catch (Exception ex) { // if input is not a number
-            System.out.println("\nError! Please enter a valid number for password length (2-5)");
-            System.exit(0);
-        }
+        passwordLength = userInput.nextInt();
 
         try {
             if (numOfServers == 1) {
+                // change to your 1st server's ip address
+                MD5Crack_Interface stub = (MD5Crack_Interface) Naming
+                        .lookup("rmi://192.168.0.132:5000/MD5Crack_Interface");
+                cores = stub.getTotalThreads();
+                validation();
                 stub.crackPassword(hashedMD5, numOfThread, passwordLength, 3);
+                while (stub.isFound() == false) {
+                    if (stub.isFound()) {
+                        stub.stopAllThreads();
+                        break;
+                    }
+                }
+                List<String> values = stub.getPassword();
+                if (!values.isEmpty()) {
+                    System.out.print("Found password is " + values.get(0) + "\n");
+                    System.out.print("Found threadID is " + values.get(1) + "\n");
+                    System.out.print("Time is " + values.get(2));
+                }
             } else if (numOfServers == 2) {
+                // change to your 1st server's ip address
+                MD5Crack_Interface stub = (MD5Crack_Interface) Naming
+                        .lookup("rmi://192.168.0.132:5000/MD5Crack_Interface");
+                cores = stub.getTotalThreads();
+                // change to your 2nd Server's ip address
+                MD5Crack_Interface stub2 = (MD5Crack_Interface) Naming
+                        .lookup("rmi://192.168.0.167:5000/MD5Crack_Interface");
+                cores += stub2.getTotalThreads();
+                validation();
                 stub.crackPassword(hashedMD5, numOfThread, passwordLength, 1);
                 stub2.crackPassword(hashedMD5, numOfThread, passwordLength, 2);
-            }
-
-            while (stub.isFound() == false || stub2.isFound() == false) {
-                if (stub.isFound()) {
-                    stub2.stopAllThreads();
-                    break;
-                } else if (stub2.isFound()) {
-                    stub.stopAllThreads();
-                    break;
+                while (stub.isFound() == false || stub2.isFound() == false) {
+                    if (stub.isFound()) {
+                        stub2.stopAllThreads();
+                        break;
+                    } else if (stub2.isFound()) {
+                        stub.stopAllThreads();
+                        break;
+                    }
                 }
-            }
-
-            List<String> values = stub.getPassword();
-            List<String> values2 = stub2.getPassword();
-
-            if (!values.isEmpty()) {
-                System.out.print("Found password is " + values.get(0) + "\n");
-                System.out.print("Found threadID is " + values.get(1) + "\n");
-                System.out.print("Time is " + values.get(2));
-            } else {
-                System.out.print("Found password is " + values2.get(0) + "\n");
-                System.out.print("Found threadID is " + values2.get(1) + "\n");
-                System.out.print("Time is " + values2.get(2));
+                List<String> values = stub.getPassword();
+                List<String> values2 = stub2.getPassword();
+                if (!values.isEmpty()) {
+                    System.out.print("Found password is " + values.get(0) + "\n");
+                    System.out.print("Found threadID is " + values.get(1) + "\n");
+                    System.out.print("Time is " + values.get(2));
+                } else {
+                    System.out.print("Found password is " + values2.get(0) + "\n");
+                    System.out.print("Found threadID is " + values2.get(1) + "\n");
+                    System.out.print("Time is " + values2.get(2));
+                }
             }
 
             System.out.println("\n ===end===");
@@ -135,4 +111,52 @@ public class MD5Client {
         userInput.close();
 
     }
+
+    private static void validation(){
+        // Check for valid hashed md5 value 
+        if (hashedMD5.length() != 32) {
+            System.out.println("\nError! Please enter correct length of MD5 Hash value.");
+            System.exit(0);
+        }
+
+        try {
+            if (numOfServers < 1 || numOfServers > 2) {
+                System.out.println("Max 2 servers only!");
+                System.exit(0);
+            }
+        } catch (Exception e) {
+            System.out.println("\nError! Please enter a valid number 1 or 2 only");
+            System.exit(0);
+        }
+
+        try {
+            if (numOfThread < 1 || numOfThread > 10 && cores < numOfThread) { // check number of thread entered
+                System.out.println("\nError! Please enter a valid number of threads (1-10).");
+                System.out.println("Number of available threads on your machine is : " + cores);
+                System.exit(0);
+            }
+            // to inform the users that their machine is not capable to execute
+            else if (cores < numOfThread) {
+                System.out.println("\nError, your machine could not excecute! Insufficient thread.");
+                System.out.println("Available threads : " + cores);
+                System.exit(0);
+            }
+        } catch (Exception ex) { // if input is not a number
+            System.out.println("\nError! Please enter a valid number of threads (1-10)");
+            System.exit(0);
+        }
+
+        try {
+            if (passwordLength < 2 || passwordLength > 5) { // check the password length entered
+                System.out.println("\nError! Please enter a character number from 2 to 5 only.");
+                System.exit(0);
+            }
+        } catch (Exception ex) { // if input is not a number
+            System.out.println("\nError! Please enter a valid number for password length (2-5)");
+            System.exit(0);
+        }
+
+        
+    }
+
 }
