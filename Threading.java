@@ -20,45 +20,49 @@ public class Threading {
 	// this method takes number of threads and returns intervals to search
 	public static List<String> intervals(int noOfThreads) {
 
-		int charStart = 0;
-		int charEnd = 0;
-
-		if (serverNo == 1) {
-			charStart = 33;
-			charEnd = 80;
-		} else if (serverNo == 2) {
-			charStart = 80;
-			charEnd = 127;
-		} else {
-			charStart = 33;
-			charEnd = 127;
-		}
-
-		System.out.println(charEnd);
-
 		List<String> listOfInterval = new ArrayList<String>();
-		int diffRange = charEnd - charStart;
-		int quot = diffRange / noOfThreads;
-		int x = charStart;
-		List<Integer> steps = new ArrayList<Integer>();
-		for (int i = charStart; i < charEnd; i += quot) {
-			x = i;
-			steps.add(x);
-		}
-		if (steps.get(steps.size() - 1) < charEnd - 1) {
-			steps.set(steps.size() - 1, charEnd - 1);
+
+		if (noOfThreads == 1) {
+			listOfInterval.add(33 + "-" + 126);
+		} else {
+			int charStart = 0;
+			int charEnd = 0;
+
+			if (serverNo == 1) {
+				charStart = 33;
+				charEnd = 80;
+			} else if (serverNo == 2) {
+				charStart = 80;
+				charEnd = 127;
+			} else {
+				charStart = 33;
+				charEnd = 127;
+			}
+
+			int diffRange = charEnd - charStart;
+			int quot = diffRange / noOfThreads;
+			int x = charStart;
+			List<Integer> steps = new ArrayList<Integer>();
+			for (int i = charStart; i < charEnd; i += quot) {
+				x = i;
+				steps.add(x);
+			}
+			if (steps.get(steps.size() - 1) < charEnd - 1) {
+				steps.set(steps.size() - 1, charEnd - 1);
+			}
+
+			for (int i = 0; i < steps.size() - 1; i++) {
+				int a = steps.get(i);
+				int b;
+				try {
+					b = steps.get(i + 1);
+				} catch (Exception e) {
+					b = steps.get(i);
+				}
+				listOfInterval.add(a + "-" + b);
+			}
 		}
 
-		for (int i = 0; i < steps.size() - 1; i++) {
-			int a = steps.get(i);
-			int b;
-			try {
-				b = steps.get(i + 1);
-			} catch (Exception e) {
-				b = steps.get(i);
-			}
-			listOfInterval.add(a + "-" + b);
-		}
 		return listOfInterval;
 	}
 
@@ -66,6 +70,7 @@ public class Threading {
 	public static void startThreads(String hashcode, List<String> ints, int passwordLength) {
 		// for each loop to intialize thread and put all the threads inside a list
 		// (listOfThreads)
+
 		for (String inte : ints) {
 			MD5Thread thread = new MD5Thread(inte, hashcode, passwordLength);
 			listOfThreads.add(thread);
