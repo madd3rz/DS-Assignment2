@@ -8,21 +8,23 @@ public class MD5Imple extends UnicastRemoteObject implements MD5Crack_Interface 
     boolean found = false;
 
     List<String> values;
+
     protected MD5Imple() throws RemoteException {
         super();
     }
 
     @Override
-    public void crackPassword(String hashedMD5, int numberOfThreads, int passwordLength, int server) throws RemoteException {
-            Threading.startServer(hashedMD5, numberOfThreads, passwordLength, server);
+    public void crackPassword(String hashedMD5, int numberOfThreads, int passwordLength, int server)
+            throws RemoteException {
+        Threading.startServer(hashedMD5, numberOfThreads, passwordLength, server);
     }
 
-    public List<String> getPassword() throws RemoteException{
+    public List<String> getPassword() throws RemoteException {
         values = Threading.getPass();
         return (values);
     }
 
-    public int getTotalThreads(){
+    public int getTotalThreads() {
         return numOfThreads;
     }
 
@@ -33,10 +35,10 @@ public class MD5Imple extends UnicastRemoteObject implements MD5Crack_Interface 
 
     @Override
     public boolean isFound() throws RemoteException {
-        while (Threading.isFound != true) { 
+        while (Threading.isFound != true) {
             return false;
         }
         return true;
     }
-    
+
 }
